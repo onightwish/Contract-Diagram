@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" xmlns:ibm="http://www.ibm.com/xmlns/prod/ilog/elixir/diagram/2010"
+			   creationComplete="application1_creationCompleteHandler(event)">
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.ibm.ilog.elixir.diagram.Link;
+			import com.ibm.ilog.elixir.diagram.graphlayout.random.RandomLayout;
+			
+			import mx.collections.ArrayCollection;
+			import mx.events.FlexEvent;
+
+			
+			[Bindable]
+			public var nodes:ArrayCollection = null;
+			[Bindable]
+			public var links:ArrayCollection = null;
+			
+			public function getNodeDataProvider():ArrayCollection
+			{
+				if (nodes == null)
+					fillDataProviders();
+				return nodes;
+			}
+			public function getLinkDataProvider():ArrayCollection
+			{
+				if (links == null)
+					fillDataProviders();
+				return links;        
+			}
+			private function fillDataProviders():void {
+				nodes = new ArrayCollection();
+				links = new ArrayCollection();
+				var n:Object = new Object();
+				n.label="Node Vip";
+				nodes.addItem(n);
+				for(var i:uint=1;i<=30;i++){
+					var n:Object = new Object();
+					n.label="Node " + i;
+					nodes.addItem(n);
+					
+					var link:Object = new Object();
+					link.start = nodes[0];
+					link.end = nodes[i];
+					links.addItem(link);
+				}
+			}
+			
+			protected function application1_creationCompleteHandler(event:FlexEvent):void
+			{
+				var randomLayout:RandomLayout = new RandomLayout();
+				randomLayout.layoutRegion = new Rectangle(0,0, 1200, 600);
+//				randomLayout.linkStyle = BasicLinkStyleLayout.NARROW_STRAIGHT_LINE_BUNDLE;
+				randomLayout.coordinatesMode = "container";
+				diagram.nodeLayout = randomLayout;
+				diagram.performGraphLayout();
+			}
+			
+			private function linkRendererFunction(diagram:Diagram, item:Object, startNodeItem:Object, endNodeItem:Object):Link{
+				var link:Link = new Link();
+				link.depth = -100
+				return link;
+			}
+
+		]]>
+	</fx:Script>
+	
+	<ibm:Diagram id="diagram" left="0" top="0" width="100%" height="100%" 
+				 nodeDataProvider="{getNodeDataProvider()}" 
+				 linkDataProvider="{getLinkDataProvider()}"
+				 xLocationField="x" yLocationField="y" linkRendererFunction="linkRendererFunction"
+				 startNodeField="start" endNodeField="end" automaticGraphLayout="false"
+				 labelField="label" allowMovingNodes="true" allowLinkSelection="true">
+	</ibm:Diagram>
+
+</s:Application>
